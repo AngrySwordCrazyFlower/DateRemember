@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DateRemember</string>
+    <string name="future_activity_add_model_action_bar_title">添加</string>
+    <string name="future_activity_detail_model_action_bar_title">详细</string>
+    <string name="future_activity_detail_model_action_bar_cancel">取消</string>
+    <string name="future_activity_detail_model_action_bar_check">确认</string>
+</resources>

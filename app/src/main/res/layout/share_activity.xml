@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/share_bg_4">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:id="@+id/share_activity_custom_bar">
+
+        <Button
+            android:id="@+id/share_activity_return"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="@mipmap/left_return"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="Date Remember"
+            android:gravity="center"
+            android:textSize="26sp"/>
+
+        <Button
+            android:id="@+id/share_activity_edit"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="@drawable/ic_edit_cccccc_24dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="距离"
+            android:textSize="27sp"/>
+
+        <TextView
+            android:id="@+id/share_activity_event_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="50sp"/>
+
+        <TextView
+            android:id="@+id/share_activity_event_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:id="@+id/share_activity_event_left_days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="41sp"/>
+    </LinearLayout>
+
+</RelativeLayout>

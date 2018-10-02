@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.crazyflower.dateremember.MainActivity"
+    android:background="@mipmap/main_activity_bg"
+    android:fitsSystemWindows="true">
+
+
+    <RelativeLayout
+
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:id="@+id/dateLL"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/main_ac_month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="40dp"
+                android:text=""/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="月"/>
+
+            <TextView
+                android:id="@+id/main_ac_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="40dp"
+                android:text=""/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="日"/>
+
+            <TextView
+                android:id="@+id/main_ac_year"
+                android:paddingLeft="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:text=""/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_alignBottom="@id/dateLL"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/main_ac_weekday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="33dp"
+                android:text=""/>
+        </LinearLayout>
+
+
+
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_rectangle_future"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="51dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/setting"/>
+
+            <TextView
+                android:layout_centerVertical="true"
+                android:id="@+id/future_word"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="距离"
+                android:textSize="28sp"/>
+
+
+            <Button
+                android:id="@+id/addFutureEvent"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/cycle_button"
+                android:gravity="center"
+                android:text="+"
+                android:textSize="24sp"
+                android:textColor="#FF8ADCDC"
+                android:layout_centerVertical="true"
+
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="2dp"
+                />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#ffffff">
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/future_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+        </android.support.v7.widget.RecyclerView>
+        
+    </LinearLayout>
+
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </LinearLayout>
+
+
+</LinearLayout>

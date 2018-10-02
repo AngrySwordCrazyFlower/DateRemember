@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="事件"
+                android:textColor="#000000"
+                android:textSize="20sp"/>
+            <View
+                android:layout_marginLeft="12dp"
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="#cccccc">
+            </View>
+            <EditText
+                android:id="@+id/event_content"
+                android:layout_marginLeft="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:hint="输入事件"
+                android:textSize="20sp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/remind_select">
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/remind_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="提醒"
+                android:textSize="20sp"
+                android:textColor="#000000"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
+            <TextView
+                android:id="@+id/remind_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#aaaaaa"
+                android:paddingEnd="12dp"
+                android:paddingRight="12dp" />
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@mipmap/to_right_gray"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/left_days"
+        android:layout_margin="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_gravity="center"
+        android:textSize="18sp"
+        android:textColor="#aaaaaa">
+
+    </TextView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#ffffff">
+        <com.example.crazyflower.dateremember.MyWheelView
+            android:id="@+id/year"
+            android:layout_height="250dp"
+            android:layout_width="0dp"
+            android:layout_weight="1" />
+        <com.example.crazyflower.dateremember.MyWheelView
+            android:id="@+id/month"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_weight="1"/>
+        <com.example.crazyflower.dateremember.MyWheelView
+            android:id="@+id/day"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+</LinearLayout>

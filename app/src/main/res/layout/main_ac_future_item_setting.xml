@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
+    <!--android:background="@drawable/item_bottom_border"-->
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="60dp"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_marginTop="4dp"
+            android:id="@+id/future_yyyy"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#55000000"
+            android:text="2018"/>
+        <TextView
+            android:layout_marginBottom="1dp"
+            android:id="@+id/future_mm_dd"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:textColor="#55000000"
+            android:gravity="center"
+            android:text="06-09"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="5dp"
+        android:orientation="horizontal"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_bottom_border">
+
+        <TextView
+            android:id="@+id/future_event"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="24sp"
+            android:gravity="center_vertical"
+            android:textColor="#ff000000"
+            android:text="1234"/>
+
+
+        <TextView
+            android:id="@+id/future_days"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="24sp"
+            android:gravity="center_vertical|right"
+            android:layout_marginRight="5dp"
+            android:textColor="#bb000000"
+            android:text="123"/>
+
+        <TextView
+            android:layout_marginRight="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="24sp"
+            android:gravity="center_vertical"
+            android:textColor="#bb000000"
+            android:text="天"/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

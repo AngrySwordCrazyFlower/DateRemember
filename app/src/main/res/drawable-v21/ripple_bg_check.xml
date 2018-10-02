@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:color="#FFAAAAAA">
+    <item
+        android:id="@+id/add_future_event_cancel_click"
+        android:drawable="@drawable/ic_check_ffffff_24dp" />
+</ripple>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="remind_not_select">#FFFFFFFF</color>
+    <color name="remind_select">#33CCCCCC</color>
+    <color name="reminder_layout_background_color">#FCFCFC</color>
+    <color name="future_activity_color_primary">#FF0B8CEF</color>
+    <color name="future_activity_color_primary_dark">#FF0B8CEF</color>
+    <color name="future_activity_color_windows_background">#CCCCCC</color>
+</resources>
