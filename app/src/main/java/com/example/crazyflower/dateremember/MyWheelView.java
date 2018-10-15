@@ -66,6 +66,7 @@ public class MyWheelView extends View {
 
     public MyWheelView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
         initDataAndPaint();
     }
 

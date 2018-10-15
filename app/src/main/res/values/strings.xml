@@ -4,4 +4,22 @@
     <string name="future_activity_detail_model_action_bar_title">详细</string>
     <string name="future_activity_detail_model_action_bar_cancel">取消</string>
     <string name="future_activity_detail_model_action_bar_check">确认</string>
+    <string name="remind_the_day">当天</string>
+    <string name="remind_one_day_before">一天前</string>
+    <string name="remind_one_week_before">一周前</string>
+    <string name="remind_one_month_before">一月前</string>
+    <string name="remind_one_year_before">一年前</string>
+
+    <string name="MONDAY">星期一</string>
+    <string name="TUESDAY">星期二</string>
+    <string name="WEDNESDAY">星期三</string>
+    <string name="THURSDAY">星期四</string>
+    <string name="FRIDAY">星期五</string>
+    <string name="SATURDAY">星期六</string>
+    <string name="SUNDAY">星期日</string>
+
+
+    <string name="event_day">天</string>
+    <string name="future_event_title">距离</string>
+    <string name="future_event_verb">还有</string>
 </resources>

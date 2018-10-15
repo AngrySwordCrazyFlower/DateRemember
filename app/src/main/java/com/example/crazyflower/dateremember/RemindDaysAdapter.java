@@ -19,7 +19,7 @@ import java.util.List;
 
 public class RemindDaysAdapter extends RecyclerView.Adapter<RemindDaysAdapter.RemindDaysViewHolder> {
 
-    private List<String> list;
+    private List<RemindDaysList.RemindDayElement> list;
     private int currentSelected = 0;
 
     static class RemindDaysViewHolder extends RecyclerView.ViewHolder {
@@ -51,7 +51,7 @@ public class RemindDaysAdapter extends RecyclerView.Adapter<RemindDaysAdapter.Re
             holder.imageView.setVisibility(View.VISIBLE);
             holder.textView.setTextColor(0xff1296db);
         }
-        holder.textView.setText(list.get(position));
+        holder.textView.setText(list.get(position).getText());
     }
 
     @Override
@@ -59,11 +59,11 @@ public class RemindDaysAdapter extends RecyclerView.Adapter<RemindDaysAdapter.Re
         return list.size();
     }
 
-    public RemindDaysAdapter(List<String> list) {
+    public RemindDaysAdapter(List<RemindDaysList.RemindDayElement> list) {
         this.list = list;
     }
 
-    public void setList(List<String> list) {
+    public void setList(List<RemindDaysList.RemindDayElement> list) {
         this.list = list;
     }
 

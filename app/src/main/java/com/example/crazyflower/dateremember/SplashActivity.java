@@ -5,61 +5,73 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
-import com.example.crazyflower.dateremember.Data.DataInMemory;
-
-import java.lang.ref.WeakReference;
+import com.example.crazyflower.dateremember.Data.DatabaseManager;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private Handler handler;
+    private static final String TAG = "SplashActivity";
 
-    private static final int GET_DATA_OK = 1;
+    private SplashActivityHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
-        handler = new MyHandler(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Thread thread = new InitDataThread();
-        thread.start();
+        handler = new SplashActivityHandler(this);
+        handler.updateDatabase();
     }
 
-    private void readyForMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        handler = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+    }
+
+    private void finishTask() {
+        Intent intent = new Intent();
+        intent.setClass(this, MainActivity.class);
         startActivity(intent);
     }
 
-    private class InitDataThread extends Thread {
-        @Override
-        public void run() {
-            DataInMemory.getInstance();
-            Message message = new Message();
-            message.what = SplashActivity.GET_DATA_OK;
-            SplashActivity.this.handler.sendMessage(message);
+    static private class SplashActivityHandler extends Handler {
+
+        SplashActivity splashActivity;
+
+        DatabaseManager databaseManager;
+
+        SplashActivityHandler(SplashActivity splashActivity) {
+            this.splashActivity = splashActivity;
+            this.databaseManager = new DatabaseManager(splashActivity);
         }
-    }
 
-    private static class MyHandler extends Handler {
-
-        WeakReference<SplashActivity> splashActivityWeakReference;
-
-        MyHandler(SplashActivity splashActivity) {
-            super();
-            this.splashActivityWeakReference = new WeakReference<>(splashActivity);
+        void updateDatabase() {
+            databaseManager.updateDatabase(this);
         }
 
         @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-            switch (message.what) {
-                case GET_DATA_OK:
-                    splashActivityWeakReference.get().readyForMainActivity();
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case DatabaseManager.UPDATE_OK:
+                    splashActivity.finishTask();
                     break;
             }
         }

@@ -20,7 +20,7 @@
             android:id="@+id/share_activity_return"
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:background="@mipmap/left_return"/>
+            android:background="@mipmap/left"/>
 
         <TextView
             android:layout_width="0dp"
@@ -28,13 +28,14 @@
             android:layout_height="match_parent"
             android:text="Date Remember"
             android:gravity="center"
-            android:textSize="26sp"/>
+            android:textSize="26sp"
+            android:textColor="#FFFFFFFF"/>
 
         <Button
             android:id="@+id/share_activity_edit"
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:background="@drawable/ic_edit_cccccc_24dp"/>
+            android:background="@drawable/ic_edit_ffffff_24dp"/>
 
     </LinearLayout>
 
@@ -52,7 +53,8 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="距离"
-            android:textSize="27sp"/>
+            android:textSize="27sp"
+            android:textColor="#FFFFFFFF"/>
 
         <TextView
             android:id="@+id/share_activity_event_note"
@@ -60,7 +62,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="50sp"/>
+            android:textSize="50sp"
+            android:textColor="#FFFFFFFF"/>
 
         <TextView
             android:id="@+id/share_activity_event_date"
@@ -68,7 +71,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="24sp"/>
+            android:textSize="24sp"
+            android:textColor="#FFFFFFFF"/>
 
         <TextView
             android:id="@+id/share_activity_event_left_days"
@@ -76,7 +80,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="41sp"/>
+            android:textSize="41sp"
+            android:textColor="#FFFFFFFF"/>
     </LinearLayout>
 
 </RelativeLayout>

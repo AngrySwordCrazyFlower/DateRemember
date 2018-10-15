@@ -9,4 +9,7 @@
     <color name="future_activity_color_primary">#FF0B8CEF</color>
     <color name="future_activity_color_primary_dark">#FF0B8CEF</color>
     <color name="future_activity_color_windows_background">#CCCCCC</color>
+
+    <color name="waiting_popup_window_background_color">#CCCCCCCC</color>
+    <color name="remind_day_popup_window_background_color">#CCCCCCCC</color>
 </resources>

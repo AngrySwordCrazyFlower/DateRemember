@@ -9,26 +9,26 @@ import java.util.List;
 
 public class RemindDaysList {
 
-    private List<String> list;
+    private static List<RemindDayElement> list;
 
-    private static RemindDaysList remindDaysList;
+    static {
+        list = new ArrayList<>();
+        list.add(new RemindDayElement(MyApplication.getContext().getResources().getString(R.string.remind_the_day), 0));
+        list.add(new RemindDayElement(MyApplication.getContext().getResources().getString(R.string.remind_one_day_before), 1));
+        list.add(new RemindDayElement(MyApplication.getContext().getResources().getString(R.string.remind_one_week_before), 7));
+        list.add(new RemindDayElement(MyApplication.getContext().getResources().getString(R.string.remind_one_month_before), 30));
+        list.add(new RemindDayElement(MyApplication.getContext().getResources().getString(R.string.remind_one_year_before), 365));
+    }
 
     private RemindDaysList() {
-        list = new ArrayList<>();
-        list.add("当天");
-        list.add("一天前");
-        list.add("一周前");
-        list.add("一月前");
-        list.add("一年前");
+
     }
 
-    public static List<String> getList() {
-        if (null == remindDaysList)
-            remindDaysList = new RemindDaysList();
-        return remindDaysList.list;
+    public static List<RemindDayElement> getList() {
+        return list;
     }
 
-    public static String getItemByIndex(int index) {
+    public static RemindDayElement getItemByIndex(int index) {
         switch (index) {
             case 0:
             case 1:
@@ -38,7 +38,27 @@ public class RemindDaysList {
                 return getList().get(index);
         }
 
-        return "未知错误";
+        return null;
+    }
+
+    static class RemindDayElement {
+
+        private String text;
+
+        private int remindDays;
+
+        private RemindDayElement(String text, int remindDays) {
+            this.text = text;
+            this.remindDays = remindDays;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public int getRemindDays() {
+            return remindDays;
+        }
     }
 
 }

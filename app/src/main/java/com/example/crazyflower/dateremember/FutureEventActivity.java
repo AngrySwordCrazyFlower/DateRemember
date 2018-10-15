@@ -1,8 +1,8 @@
 package com.example.crazyflower.dateremember;
 
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,19 +13,25 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.crazyflower.dateremember.Data.DataInMemory;
+
+import com.example.crazyflower.dateremember.Data.DatabaseManager;
+import com.example.crazyflower.dateremember.Data.Event;
+import com.example.crazyflower.dateremember.Util.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by CrazyFlower on 2018/4/17.
@@ -34,6 +40,8 @@ import java.util.List;
 public class FutureEventActivity extends AppCompatActivity implements MyWheelView.IWheelViewObservable, View.OnClickListener, IRecyclerViewClickListener {
 
     public static final int FUTURE_EVENT_NO_MODEL = -1;
+
+    public static final int FUTURE_EVENT_NO_ID = -1;
 
     public static final int FUTURE_EVENT_ADD_MODEL = 100;
 
@@ -49,33 +57,34 @@ public class FutureEventActivity extends AppCompatActivity implements MyWheelVie
 
     private static final String TAG = "FutureEventActivity";
 
-    private static final int DAY_MILLIS = 86400000;
-
     private int model;
-    private FutureEvent event;
+    private long eventId;
 
     private EditText eventContentView;
 
     private LinearLayout reminderLayout;
     private int remindDaysIndex;
-    private List<String> remindDaysList;
     private TextView daysTextView;
 
     private TextView leftDaysTextView;
-    private long leftDays;
     private MyWheelView yearWheelView;
     private MyWheelView monthWheelView;
     private MyWheelView dayWheelView;
     private Calendar today;
     private Calendar chosenDate;
 
+    private EventActivityHandler handler;
+
     private PopupWindow popupWindow;
+
+    private int onStartTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         model = getIntent().getIntExtra("model", FUTURE_EVENT_NO_MODEL);
-        Log.d(TAG, "onCreate: " + model);
+        Log.d(TAG, "onStart: " + model);
         if (FutureEventActivity.FUTURE_EVENT_NO_MODEL == model)
             finish();
         setContentView(R.layout.add_future_event);
@@ -86,29 +95,24 @@ public class FutureEventActivity extends AppCompatActivity implements MyWheelVie
     @Override
     protected void onStart() {
         super.onStart();
-        initData();
-        initViewWithData();
+        onStartTime++;
+        handler = new EventActivityHandler(this);
+        if (1 == onStartTime) {
+            if (FutureEventActivity.FUTURE_EVENT_DETAIL_MODEL == model) {
+                //详情模式
+                eventId = getIntent().getLongExtra("event_id", FUTURE_EVENT_NO_ID);
+                handler.getEvent(eventId);
+            } else {
+                //增加模式
+                initViewWithData(null);
+            }
+        }
     }
 
-    private void initData() {
-        long eventId = getIntent().getLongExtra("event_id", -1);
-
-        today = Calendar.getInstance();
-        today.setTimeInMillis(today.getTimeInMillis() / DAY_MILLIS * DAY_MILLIS);
-
-        remindDaysList = RemindDaysList.getList();
-        if (-1 != eventId) {
-            event = DataInMemory.getInstance().getFutureEventById(eventId);
-            remindDaysIndex = event.getRemindDayIndex();
-            chosenDate = Calendar.getInstance();
-            chosenDate.setTimeInMillis(event.getCalendar().getTimeInMillis() / DAY_MILLIS * DAY_MILLIS);
-            eventContentView.setText(event.getNote());
-        }
-        else {
-            remindDaysIndex = 0;
-            chosenDate = Calendar.getInstance();
-            chosenDate.setTimeInMillis(chosenDate.getTimeInMillis() / DAY_MILLIS * DAY_MILLIS);
-        }
+    @Override
+    protected void onStop() {
+        handler = null;
+        super.onStop();
     }
 
     private void initView() {
@@ -123,11 +127,70 @@ public class FutureEventActivity extends AppCompatActivity implements MyWheelVie
         dayWheelView = (MyWheelView) findViewById(R.id.day);
     }
 
-    private void initViewWithData() {
+    private void setCustomActionBar() {
+        View myActionBarView = null;
+        if (FUTURE_EVENT_ADD_MODEL == model) {
+            myActionBarView = LayoutInflater.from(this).inflate(R.layout.add_model_action_bar, null);
+            Button closeButton = myActionBarView.findViewById(R.id.future_event_add_model_action_bar_cancel);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cancel();
+                }
+            });
+            Button checkButton = myActionBarView.findViewById(R.id.future_event_add_model_action_bar_check);
+            checkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    check();
+                }
+            });
+        } else if (FUTURE_EVENT_DETAIL_MODEL == model) {
+            myActionBarView = LayoutInflater.from(this).inflate(R.layout.detail_model_action_bar, null);
+            TextView closeButton = myActionBarView.findViewById(R.id.future_event_detail_model_action_bar_cancel);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cancel();
+                }
+            });
+            TextView checkButton = myActionBarView.findViewById(R.id.future_event_detail_model_action_bar_check);
+            checkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    check();
+                }
+            });
+        }
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setCustomView(myActionBarView);
+
+    }
+
+    private void initViewWithData(Event event) {
+        today = Calendar.getInstance();
+        if (null == event) {
+            remindDaysIndex = 0;
+            chosenDate = Calendar.getInstance(Locale.getDefault());
+        } else {
+            remindDaysIndex = event.getRemindIndex();
+            chosenDate = Calendar.getInstance(Locale.getDefault());
+            chosenDate.setTimeInMillis(event.getMills());
+        }
+
+        chosenDate.set(Calendar.HOUR, 0);
+        chosenDate.set(Calendar.MINUTE, 0);
+        chosenDate.set(Calendar.SECOND, 0);
+        chosenDate.set(Calendar.MILLISECOND, 0);
         reminderLayout.setOnClickListener(this);
         notifyRemindDaysChanged();
 
-        //先初始化数据之后  再添加监听器!! important   不然这个初始化被监听  折腾起来很麻烦
+        //先初始化数据之后  再添加监听器!! import ant   不然这个初始化被监听  折腾起来很麻烦
         updateYearWheelView();
         yearWheelView.setCurrentItemIndex(yearWheelView.getData().indexOf(Integer.toString(chosenDate.get(Calendar.YEAR))));
         updateMonthWheelView();
@@ -177,147 +240,125 @@ public class FutureEventActivity extends AppCompatActivity implements MyWheelVie
         dayWheelView.setData(dayList);
     }
 
-    private void setCustomActionBar() {
-        View myActionBarView = null;
-        if (FUTURE_EVENT_ADD_MODEL == model) {
-            myActionBarView = LayoutInflater.from(this).inflate(R.layout.add_model_action_bar, null);
-            Button closeButton = myActionBarView.findViewById(R.id.future_event_add_model_action_bar_cancel);
-            closeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cancel();
-                }
-            });
-            Button checkButton = myActionBarView.findViewById(R.id.future_event_add_model_action_bar_check);
-            checkButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    check();
-                }
-            });
-        } else if (FUTURE_EVENT_DETAIL_MODEL == model) {
-            myActionBarView = LayoutInflater.from(this).inflate(R.layout.detail_model_action_bar, null);
-            TextView closeButton = myActionBarView.findViewById(R.id.future_event_detail_model_action_bar_cancel);
-            closeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cancel();
-                }
-            });
-            TextView checkButton = myActionBarView.findViewById(R.id.future_event_detail_model_action_bar_check);
-            checkButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    check();
-                }
-            });
-        }
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setCustomView(myActionBarView);
-
-    }
-
-    private void backgroundAlpha (float bgAlpha) {
-        WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.alpha = bgAlpha; //0.0-1.0
-        getWindow().setAttributes(lp);
-    }
-
     private void notifyRemindDaysChanged() {
-        daysTextView.setText(remindDaysList.get(remindDaysIndex));
+        daysTextView.setText(RemindDaysList.getItemByIndex(remindDaysIndex).getText());
     }
 
-    private void showPopupWindow() {
+    private void setLeftDays() {
+        long leftDays = chosenDate.getTimeInMillis() / CalendarUtil.MILL_OF_ONE_DAY - System.currentTimeMillis() / CalendarUtil.MILL_OF_ONE_DAY;
+        leftDaysTextView.setText("还有 " + leftDays + " 天");
+    }
 
-        backgroundAlpha((float) 0.5);
+    private void showRemindDayChoicePopupWindow() {
+        View parent = getWindow().getDecorView();
+        View popupView = this.getLayoutInflater().inflate(R.layout.remind_day_popupwindow, (ViewGroup) parent, false);
 
-        final View popupView = FutureEventActivity.this.getLayoutInflater().inflate(R.layout.remind_day_popupwindow, null);
-
-        final RecyclerView recyclerView = (RecyclerView) popupView.findViewById(R.id.remind_days_list);
-
+        RecyclerView recyclerView = (RecyclerView) popupView.findViewById(R.id.remind_days_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        RemindDaysAdapter adapter = new RemindDaysAdapter(remindDaysList);
+        RemindDaysAdapter adapter = new RemindDaysAdapter(RemindDaysList.getList());
         adapter.setCurrentSelected(remindDaysIndex);
         recyclerView.setAdapter(adapter);
-
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-
-        popupWindow = new PopupWindow(this);
-        popupWindow.setContentView(popupView);
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-
         recyclerView.addOnItemTouchListener(new OnItemTouchListener(recyclerView, this));
 
-        popupWindow.setAnimationStyle(R.style.popup_window_anim);
+        RelativeLayout relativeLayout = popupView.findViewById(R.id.remind_day_popup_window_layout);
+        relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
 
-        popupWindow.setBackgroundDrawable(new ColorDrawable(0x00000000));
-
+        popupWindow = new PopupWindow(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        popupWindow.setContentView(popupView);
+        popupWindow.setBackgroundDrawable(null);
         popupWindow.setFocusable(true);
-
         popupWindow.setTouchable(true);
-
-        popupWindow.setOutsideTouchable(true);
+        popupWindow.setOutsideTouchable(false);
+        popupWindow.setClippingEnabled(false);
+        popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                backgroundAlpha((float) 1);
                 notifyRemindDaysChanged();
             }
         });
 
-        View parent = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-        popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        popupWindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
     }
 
-    private void setLeftDays() {
-        leftDays = (long) (chosenDate.getTimeInMillis() - today.getTimeInMillis()) / DAY_MILLIS;
-        leftDaysTextView.setText("还有 " + leftDays + " 天");
+    private void showWaitingPopupWindow() {
+        View parent = getWindow().getDecorView();
+        View view = this.getLayoutInflater().inflate(R.layout.waiting, (ViewGroup) parent, false);
+        popupWindow = new PopupWindow(this);
+        popupWindow.setContentView(view);
+        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setOutsideTouchable(false);
+        popupWindow.setClippingEnabled(false);
+        popupWindow.setTouchable(true);
+        popupWindow.setFocusable(true);
+        popupWindow.setBackgroundDrawable(null);
+        popupWindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
+    }
+
+    private void dismissWaitingPopupWindow() {
+        if (null != popupWindow) {
+            if (popupWindow.isShowing())
+                popupWindow.dismiss();
+        }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        Log.d(TAG, "finish: " + Thread.currentThread().getId());
+        dismissWaitingPopupWindow();
     }
 
     private void cancel() {
         switch (model) {
-            case FutureEventActivity.FUTURE_EVENT_ADD_CANCEL:
-                setResult(FutureEventActivity.FUTURE_EVENT_ADD_CANCEL, null);
+            case FUTURE_EVENT_DETAIL_MODEL:
+                setResult(FUTURE_EVENT_DETAIL_NOT_CHANGE, null);
                 break;
-            case FutureEventActivity.FUTURE_EVENT_DETAIL_MODEL:
-                setResult(FutureEventActivity.FUTURE_EVENT_DETAIL_NOT_CHANGE, null);
+            case FUTURE_EVENT_ADD_MODEL:
+                setResult(FUTURE_EVENT_ADD_CANCEL, null);
                 break;
         }
         finish();
     }
 
     private void check() {
+        //check whether event content blank
         if (eventContentView.getText().toString().equals("")) {
             Toast.makeText(this, "Please input event", Toast.LENGTH_LONG).show();
             return;
         }
 
-        Intent intent = new Intent();
+        //show popup window to show we are dealing, please wait.
+        showWaitingPopupWindow();
+
         switch (model) {
             case FutureEventActivity.FUTURE_EVENT_ADD_MODEL:
                 Log.d(TAG, "Add checking");
-                intent.putExtra("the_date", chosenDate);
-                intent.putExtra("note", eventContentView.getText().toString());
-                intent.putExtra("reminder_index", remindDaysIndex);
-                setResult(FutureEventActivity.FUTURE_EVENT_ADD_SUCCESS, intent);
+                handler.addEvent(chosenDate.getTimeInMillis(), eventContentView.getText().toString(), remindDaysIndex);
                 break;
             case FutureEventActivity.FUTURE_EVENT_DETAIL_MODEL:
-                intent.putExtra("the_date", chosenDate);
-                intent.putExtra("note", eventContentView.getText().toString());
-                intent.putExtra("reminder_index", remindDaysIndex);
-                intent.putExtra("id", event.getId());
-                setResult(FutureEventActivity.FUTURE_EVENT_DETAIL_CHANGE, intent);
+                handler.updateEvent(eventId, chosenDate.getTimeInMillis(), eventContentView.getText().toString(), remindDaysIndex);
                 break;
         }
-        finish();
+    }
+
+    private void successAddEvent() {
+        setResult(FUTURE_EVENT_ADD_SUCCESS, null);
+        this.finish();
+    }
+
+    private void successUpdateEvent() {
+        setResult(FUTURE_EVENT_DETAIL_CHANGE, null);
+        this.finish();
     }
 
     @Override
@@ -345,7 +386,7 @@ public class FutureEventActivity extends AppCompatActivity implements MyWheelVie
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.remind_layout:
-                showPopupWindow();
+                showRemindDayChoicePopupWindow();
                 break;
         }
     }
@@ -359,6 +400,45 @@ public class FutureEventActivity extends AppCompatActivity implements MyWheelVie
     @Override
     public void onItemLongClick(RecyclerView recyclerView, int adapterPosition) {
         //nothing to do
+    }
+
+    static private class EventActivityHandler extends Handler {
+
+        FutureEventActivity futureEventActivity;
+
+        DatabaseManager databaseManager;
+
+        EventActivityHandler(FutureEventActivity futureEventActivity) {
+            this.futureEventActivity = futureEventActivity;
+            this.databaseManager = new DatabaseManager(futureEventActivity);
+        }
+
+        void getEvent(long eventId) {
+            databaseManager.findFutureEventById(this, eventId);
+        }
+
+        void addEvent(long mills, String note, int reminderIndex) {
+            databaseManager.addFutureEventByAttributes(this, mills, note, reminderIndex);
+        }
+        void updateEvent(long id, long mills, String note, int reminderIndex) {
+            databaseManager.updateFutureEventByAttributes(this, id, mills, note, reminderIndex);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case DatabaseManager.FIND_EVENT_OK:
+                    futureEventActivity.initViewWithData((Event) msg.obj);
+                    break;
+                case DatabaseManager.ADD_EVENT_OK:
+                    futureEventActivity.successAddEvent();
+                    break;
+                case DatabaseManager.UPDATE_EVENT_OK:
+                    futureEventActivity.successUpdateEvent();
+                    break;
+            }
+        }
     }
 
 }

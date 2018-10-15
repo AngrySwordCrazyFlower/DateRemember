@@ -7,6 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.crazyflower.dateremember.Data.Event;
+import com.example.crazyflower.dateremember.Data.FutureEvent;
+import com.example.crazyflower.dateremember.Util.CalendarUtil;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -21,9 +25,7 @@ public class FutureRecyclerAdapter extends RecyclerView.Adapter<FutureRecyclerAd
 
     private static final String TAG = "FutureRecyclerAdapter :";
 
-    private Context context;
-
-    private List<FutureEvent> events;
+    private List<Event> events;
 
     static class FutureRecyclerViewHolder extends RecyclerView.ViewHolder {
         TextView eventTextView;
@@ -34,7 +36,7 @@ public class FutureRecyclerAdapter extends RecyclerView.Adapter<FutureRecyclerAd
 
         TextView mmddTextView;
 
-        FutureEvent event;
+        Event event;
 
         public FutureRecyclerViewHolder(View view) {
             super(view);
@@ -49,7 +51,7 @@ public class FutureRecyclerAdapter extends RecyclerView.Adapter<FutureRecyclerAd
         }
     }
 
-    public FutureRecyclerAdapter(List<FutureEvent> list, Context context) {
+    public FutureRecyclerAdapter(List<Event> list, Context context) {
         events = list;
     }
 
@@ -63,30 +65,19 @@ public class FutureRecyclerAdapter extends RecyclerView.Adapter<FutureRecyclerAd
     @Override
     public void onBindViewHolder(FutureRecyclerViewHolder holder, int position) {
 //        Log.d(TAG, "onBindViewHolder: " + position);
-        FutureEvent event = events.get(position);
+        Event event = events.get(position);
         holder.event = event;
         holder.eventTextView.setText(event.getNote());
-        Calendar eventCalendar = event.getCalendar();
-        holder.yyyyTextView.setText(String.valueOf( eventCalendar.get(Calendar.YEAR) ));
-        holder.mmddTextView.setText((eventCalendar.get(Calendar.MONTH) + 1) + "-" + eventCalendar.get(Calendar.DAY_OF_MONTH));
-
-        Calendar todayCalendar = Calendar.getInstance();
-        todayCalendar.set(Calendar.HOUR, 0);
-        todayCalendar.set(Calendar.MINUTE, 0);
-        todayCalendar.set(Calendar.SECOND, 0);
-        todayCalendar.set(Calendar.MILLISECOND, 0);
-        holder.daysTextView.setText(String.valueOf(getDifferentDays(todayCalendar.getTime(), eventCalendar.getTime())));
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(event.getMills());
+        holder.yyyyTextView.setText(String.valueOf(calendar.get(Calendar.YEAR) ));
+        holder.mmddTextView.setText((calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH));
+        holder.daysTextView.setText(String.valueOf(CalendarUtil.getDifferentDays(event.getMills(), System.currentTimeMillis())));
     }
 
     @Override
     public int getItemCount() {
-        return events.size();
-    }
-
-    private long getDifferentDays(Date now, Date future) {
-//        Log.d(TAG, "getDifferentDays: " + now.toString());
-//        Log.d(TAG, "getDifferentDays: " + future.toString());
-        return (future.getTime() - now.getTime()) / 86400000;
+        return null == events ? 0 : events.size();
     }
 
     @Override
